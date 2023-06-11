@@ -1,0 +1,9 @@
+---
+packages:
+  - apt-transport-https
+  - ca-certificates
+  - curl
+  - libc6
+  - gnupg-agent
+  - gnupg2
+  - software-properties-common

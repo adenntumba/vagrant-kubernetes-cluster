@@ -1,0 +1,110 @@
+---
+# tasks file for k8s-common
+
+- name: Set a hostname
+  ansible.builtin.hostname:
+    name: k8s-master
+  when: ansible_host == 'k8s-master'
+
+- name: Set a hostname
+  ansible.builtin.hostname:
+    name: k8s-node-1
+  when: ansible_host == 'k8s-node-1'
+
+- name: Set a hostname
+  ansible.builtin.hostname:
+    name: k8s-node-2
+  when: ansible_host == 'k8s-node-2'
+
+- name: Install packages that allow apt to be used over HTTPS
+  apt:
+    name: "{{ packages }}"
+    state: present
+    update_cache: yes
+
+- name: Create containerd config file
+  ansible.builtin.file:
+    path: "/etc/modules-load.d/containerd.conf"
+    state: "touch"
+
+- name: Add conf for containerd
+  blockinfile:
+    path: "/etc/modules-load.d/containerd.conf"
+    block: |
+            overlay
+            br_netfilter
+
+- name: Run modprobe
+  shell: |
+          sudo modprobe overlay
+          sudo modprobe br_netfilter
+
+- name: Set system configurations for Kubernetes networking
+  file:
+    path: "/etc/sysctl.d/99-kubernetes-cri.conf"
+    state: "touch"
+
+- name: Add conf for containerd
+  blockinfile:
+    path: "/etc/sysctl.d/99-kubernetes-cri.conf"
+    block: |
+            net.bridge.bridge-nf-call-iptables = 1
+            net.ipv4.ip_forward = 1
+            net.bridge.bridge-nf-call-ip6tables = 1
+
+- name: Apply new settings
+  command: sudo sysctl --system
+
+- name: Add an apt signing key for Docker
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present  
+
+- name: Add apt repository for stable version
+  apt_repository:
+    repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable
+    state: present  
+
+- name: Install containerd
+  shell: |
+          sudo apt-get update && sudo apt-get install -y containerd.io=1.6.12-1
+          sudo mkdir -p /etc/containerd
+          sudo containerd config default | sudo tee /etc/containerd/config.toml
+          sudo sed -i 's/SystemdCgroup = false/SystemdCgroup = true/g' /etc/containerd/config.toml
+          - name: add configuration of containerd
+          sudo systemctl restart containerd
+
+- name: Remove swapfile from /etc/fstab
+  mount:
+    name: "{{ item }}"
+    fstype: swap
+    state: absent
+  with_items:
+    - swap
+    - none
+
+- name: Disable swap
+  command: swapoff -a
+  when: ansible_swaptotal_mb > 0
+
+- name: Install and configure dependencies
+  shell: |
+          sudo apt-get update && sudo apt-get install -y apt-transport-https curl
+          curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+
+- name: Create kubernetes repo file
+  file:
+    path: "/etc/apt/sources.list.d/kubernetes.list"
+    state: "touch"
+
+- name: Add k8s source
+  blockinfile:
+    path: "/etc/apt/sources.list.d/kubernetes.list"
+    block: |
+            deb https://apt.kubernetes.io/ kubernetes-xenial main
+
+- name: Install kubernetes
+  shell: |
+          sudo apt-get update
+          sudo apt-get install -y kubelet=1.26.0-00 kubeadm=1.26.0-00 kubectl=1.26.0-00
+          sudo apt-mark hold kubelet kubeadm kubectl                

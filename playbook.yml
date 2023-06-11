@@ -1,0 +1,18 @@
+---
+- name: Deploy common packagae for Clustes Kubernetes
+  hosts: all 
+  become: true
+  roles:
+    - role: k8s-common
+
+- name: Deploy do Clustes Kubernetes for master
+  hosts: k8s-master 
+  become: true
+  roles:
+    - { role: k8s-master }
+
+- name: Deploy do Clustes Kubernetes for nodes
+  hosts: k8s-node-*
+  become: true
+  roles:
+    - { role: k8s-nodes }            
