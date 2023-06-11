@@ -5,3 +5,22 @@ Cluster Kubernetes distribuído localmente com Vagrant, Ansible e VirtualBox, us
 - Host server com 8G+ memória (mais é melhor), 60G disk (mínimo), 8 core cpu (mais é melhor)
 - Vagrant 2.3.4 
 - VirtualBox 6.1.38
+
+## Provisionando as VMs e inicializando o cluster
+```sh
+$ git clone https://github.com/AdennTumba/vagrant-kebernetes-cluster.git
+$ cd vagrant-kebernetes-cluster
+$ vagrant up
+```
+## Para desligar o cluster
+```sh
+vagrant halt
+```
+## Para restartar o cluster
+```sh
+vagrant up
+```
+## Para destruir o cluster
+```sh
+vagrant destroy -f
+```
