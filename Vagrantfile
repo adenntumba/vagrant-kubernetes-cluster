@@ -21,8 +21,8 @@ Vagrant.configure("2") do |config|
         ansible.become = true
         ansible.verbose = true
         ansible.extra_vars = {
-          node_ip: "192.168.56.10",
-          apiserver_advertise_address: "192.168.56.10"
+          node_ip: "192.168.56.#{conf["ip"]}",
+          apiserver_advertise_address: "192.168.56.#{conf["ip"]}"
       }
       end
     end

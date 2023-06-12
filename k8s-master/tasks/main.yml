@@ -4,9 +4,21 @@
   ansible.builtin.hostname:
     name: k8s-master
 
+- name: Configure node ip
+  lineinfile:
+    create: true
+    path: /etc/default/kubelet
+    line: KUBELET_EXTRA_ARGS=--node-ip={{ node_ip }}
+
+- name: Restart kubelet
+  service:
+    name: kubelet
+    daemon_reload: yes
+    state: restarted      
+
 - name: Initialize the Kubernetes cluster using kubeadm
-  command: kubeadm init --apiserver-advertise-address="192.168.56.10" --apiserver-cert-extra-sans="192.168.56.10" --pod-network-cidr=10.10.42.0/16
-  ignore_errors: true
+  command: kubeadm init --apiserver-advertise-address={{ node_ip }} --apiserver-cert-extra-sans={{ node_ip }} --node-name k8s-master --pod-network-cidr=10.10.42.0/16
+  # ignore_errors: true
 
 - name: Setup kubeconfig for vagrant user
   command: "{{ item }}"
