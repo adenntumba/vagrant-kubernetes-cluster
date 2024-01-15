@@ -7,3 +7,4 @@ packages:
   - gnupg-agent
   - gnupg2
   - software-properties-common
+  - bash-completion

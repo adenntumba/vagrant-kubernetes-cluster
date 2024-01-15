@@ -44,6 +44,16 @@
   shell: kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.26.0/manifests/calico.yaml 
   args:
     chdir: $HOME 
+         
+- name: Install kubecctl autocompletion
+  become_user: vagrant
+  shell: |
+          kubectl completion bash | sudo tee /etc/bash_completion.d/kubectl > /dev/null 
+          sudo chmod a+r /etc/bash_completion.d/kubectl
+          echo 'alias k=kubectl' >>~/.bashrc 
+          echo 'complete -o default -F __start_kubectl k' >>~/.bashrc
+  args:
+    chdir: $HOME         
 
 - name: Generate join command
   command: kubeadm token create --print-join-command
@@ -51,4 +61,3 @@
 
 - name: Copy join command to local file
   local_action: copy content="{{ join_command.stdout_lines[0] }}" dest="./join-command"
-
