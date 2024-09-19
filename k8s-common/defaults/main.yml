@@ -8,3 +8,4 @@ packages:
   - gnupg2
   - software-properties-common
   - bash-completion
+  - etcd-client
