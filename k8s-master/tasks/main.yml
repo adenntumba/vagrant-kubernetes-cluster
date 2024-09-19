@@ -39,7 +39,19 @@
   shell: kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.27.0/manifests/calico.yaml 
   args:
     chdir: $HOME 
-         
+
+- name: Install Nginx Ingress
+  become_user: vagrant
+  shell: kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.11.2/deploy/static/provider/baremetal/deploy.yaml 
+  args:
+    chdir: $HOME
+
+- name: Install Metric-Server
+  become_user: vagrant
+  shell: kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml 
+  args:
+    chdir: $HOME
+      
 - name: Install kubecctl autocompletion
   become_user: vagrant
   shell: |
@@ -69,3 +81,10 @@
             set expandtab
             set tabstop=2
             set shiftwidth=2
+
+# - name: Copy .vimrc
+#   ansible.builtin.copy:
+#     src: .
+#     dest: /home/vagrant/.vimrc
+#     owner: vagrant
+#     group: vagrant
