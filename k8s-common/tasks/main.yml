@@ -105,16 +105,6 @@
   register: key_result
   failed_when: key_result.failed and ('already exists' not in key_result.msg)
 
-- name: Install dependencies
-  apt:
-    name:
-      - apt-transport-https
-      - ca-certificates
-      - curl
-      - gpg
-    state: present
-    update_cache: yes
-    
 - name: Create kubernetes repo file
   file:
     path: "/etc/apt/sources.list.d/kubernetes.list"

@@ -3,6 +3,7 @@ packages:
   - apt-transport-https
   - ca-certificates
   - curl
+  - gpg
   - libc6
   - gnupg-agent
   - gnupg2
