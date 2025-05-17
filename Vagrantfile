@@ -1,7 +1,7 @@
 machines = {
-  "k8s-master"         => {"memory" => "3048", "cpu" => "2", "ip" => "10", "image" => "bento/ubuntu-20.04"},
-  "k8s-node-1"         => {"memory" => "2048", "cpu" => "1", "ip" => "11", "image" => "bento/ubuntu-20.04"},
-  "k8s-node-2"         => {"memory" => "2048", "cpu" => "1", "ip" => "12", "image" => "bento/ubuntu-20.04"}
+  "k8s-control-plane"   => {"memory" => "4096", "cpu" => "2", "ip" => "10", "image" => "bento/ubuntu-24.04"},
+  "k8s-worker-node-1"   => {"memory" => "2048", "cpu" => "1", "ip" => "11", "image" => "bento/ubuntu-24.04"},
+  "k8s-worker-node-2"   => {"memory" => "2048", "cpu" => "1", "ip" => "12", "image" => "bento/ubuntu-24.04"}
 }
 
 Vagrant.configure("2") do |config|

@@ -6,13 +6,13 @@
     - role: k8s-common
 
 - name: Deploy do Clustes Kubernetes for master
-  hosts: k8s-master 
+  hosts: k8s-control-plane 
   become: true
   roles:
-    - { role: k8s-master }
+    - { role: k8s-control-plane }
 
 - name: Deploy do Clustes Kubernetes for nodes
-  hosts: k8s-node-*
+  hosts: k8s-worker-node-*
   become: true
   roles:
-    - { role: k8s-nodes }            
+    - { role: k8s-worker-nodes }            

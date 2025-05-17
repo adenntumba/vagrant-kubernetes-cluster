@@ -1,8 +1,18 @@
 ---
-# tasks file for k8s-master
+# tasks file for k8s-control-plane
+# This playbook is for the control plane node in a Kubernetes cluster.
+# It configures the node, installs necessary packages, and initializes the Kubernetes cluster.
+# It assumes that the node is a control plane node and will be running the Kubernetes API server.
+# The playbook is designed to be run on the control plane node in the cluster.
+# It uses the Ansible lineinfile module to ensure that the kubelet configuration is set correctly.
+# It also uses the Ansible service module to restart the kubelet service after making changes.
+# The playbook includes tasks to install necessary packages, configure the node IP, and initialize the Kubernetes cluster.
+# It also sets up the kubeconfig for the vagrant user and installs necessary components like Calico, Nginx Ingress, and Metric-Server.
+# It generates a join command for worker nodes and creates a vimrc file with custom settings.
+
 - name: Set a hostname
   ansible.builtin.hostname:
-    name: k8s-master
+    name: k8s-control-plane
 
 - name: Configure node ip
   lineinfile:
@@ -17,7 +27,7 @@
     state: restarted     
 
 - name: Initialize the Kubernetes cluster using kubeadm
-  command: kubeadm init --apiserver-advertise-address={{ node_ip }} --apiserver-cert-extra-sans={{ node_ip }} --node-name k8s-master --pod-network-cidr=10.10.42.0/16
+  command: kubeadm init --apiserver-advertise-address={{ node_ip }} --apiserver-cert-extra-sans={{ node_ip }} --node-name k8s-control-plane --pod-network-cidr=10.10.42.0/16
   # ignore_errors: true
 
 - name: Setup kubeconfig for vagrant user

@@ -3,18 +3,18 @@
 
 - name: Set a hostname
   ansible.builtin.hostname:
-    name: k8s-master
-  when: ansible_host == 'k8s-master'
+    name: k8s-control-plane
+  when: ansible_host == 'k8s-control-plane'
 
 - name: Set a hostname
   ansible.builtin.hostname:
-    name: k8s-node-1
-  when: ansible_host == 'k8s-node-1'
+    name: k8s-worker-node-1
+  when: ansible_host == 'k8s-worker-node-1'
 
 - name: Set a hostname
   ansible.builtin.hostname:
-    name: k8s-node-2
-  when: ansible_host == 'k8s-node-2'
+    name: k8s-worker-node-2
+  when: ansible_host == 'k8s-worker-node-2'
 
 - name: Install packages that allow apt to be used over HTTPS
   apt:
@@ -91,11 +91,30 @@
     path: "/etc/apt/keyrings"
     state: "directory"  
 
-- name: Install and configure dependencies
-  shell: |
-          sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl gpg
-          curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.29/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg     
+- name: Ensure keyring directory exists
+  file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
 
+- name: Download Kubernetes apt key (if not already present)
+  get_url:
+    url: https://pkgs.k8s.io/core:/stable:/v1.29/deb/Release.key
+    dest: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+    mode: '0644'
+  register: key_result
+  failed_when: key_result.failed and ('already exists' not in key_result.msg)
+
+- name: Install dependencies
+  apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gpg
+    state: present
+    update_cache: yes
+    
 - name: Create kubernetes repo file
   file:
     path: "/etc/apt/sources.list.d/kubernetes.list"
