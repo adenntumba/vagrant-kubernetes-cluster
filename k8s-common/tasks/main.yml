@@ -91,19 +91,10 @@
     path: "/etc/apt/keyrings"
     state: "directory"  
 
-- name: Ensure keyring directory exists
-  file:
-    path: /etc/apt/keyrings
-    state: directory
-    mode: '0755'
-
-- name: Download Kubernetes apt key (if not already present)
-  get_url:
-    url: https://pkgs.k8s.io/core:/stable:/v1.29/deb/Release.key
-    dest: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
-    mode: '0644'
-  register: key_result
-  failed_when: key_result.failed and ('already exists' not in key_result.msg)
+- name: Install and configure dependencies
+  shell: |
+          sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl gpg
+          curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.33/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg     
 
 - name: Create kubernetes repo file
   file:
@@ -114,10 +105,10 @@
   blockinfile:
     path: "/etc/apt/sources.list.d/kubernetes.list"
     block: |
-            deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.29/deb/ /
+            deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.33/deb/ /
 
 - name: Install kubernetes
   shell: |
           sudo apt-get update
-          sudo apt-get install -y kubelet=1.29.3-1.1 kubeadm=1.29.3-1.1 kubectl=1.29.3-1.1
+          sudo apt-get install -y kubelet=1.33.1-1.1 kubeadm=1.33.1-1.1 kubectl=1.33.1-1.1
           sudo apt-mark hold kubelet kubeadm kubectl 
