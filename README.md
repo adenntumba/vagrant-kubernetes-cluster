@@ -1,6 +1,7 @@
 # Cluster Kubernetes Local com Vagrant, Ansible e VirtualBox
 
-Este projeto permite a criação de um cluster Kubernetes local utilizando Vagrant, Ansible e VirtualBox. Ideal para testes, demonstrações e aprendizado, proporciona uma infraestrutura replicável e automatizada para simular ambientes de produção em ambientes locais.
+Este projeto permite a criação de um cluster Kubernetes local utilizando Vagrant, Ansible e VirtualBox. Ideal para testes, demonstrações e aprendizado, ele fornece uma infraestrutura automatizada e replicável para simular ambientes de produção em um ambiente local.
+📌 Versão atual do Kubernetes: v1.33.1
 
 ## 🚀 Tecnologias Utilizadas
 
